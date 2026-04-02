@@ -4,7 +4,7 @@ import com.mcp.smartScheduler.dto.AddParticipantsResponse;
 import com.mcp.smartScheduler.dto.EventRequest;
 import com.mcp.smartScheduler.dto.EventResponse;
 import com.mcp.smartScheduler.exception.ValidationException;
-import com.mcp.smartScheduler.service.CalendarService;
+import com.mcp.smartScheduler.service.SchedulingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
@@ -19,9 +19,9 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CalendarTools {
+public class SchedulingTools {
 
-    private final CalendarService calendarService;
+    private final SchedulingService schedulingService;
 
     @Tool(
         name = "create_event",
@@ -48,7 +48,7 @@ public class CalendarTools {
         req.setTimezone(timezone != null ? timezone : "UTC");
         req.setParticipantEmails(participantEmails);
 
-        return calendarService.createEvent(req);
+        return schedulingService.createEvent(req);
     }
 
     @Tool(
@@ -60,7 +60,7 @@ public class CalendarTools {
             @ToolParam(description = "ISO-8601 range end, e.g. 2025-06-30T23:59:59") String endDate) {
 
         log.info("[MCP] get_events: [{}, {}]", startDate, endDate);
-        return calendarService.getEvents(
+        return schedulingService.getEvents(
                 parseDateTimeOrThrow(startDate, "startDate"),
                 parseDateTimeOrThrow(endDate, "endDate"));
     }
@@ -74,7 +74,7 @@ public class CalendarTools {
             @ToolParam(description = "ISO-8601 slot end, e.g. 2025-06-01T15:00:00") String endTime) {
 
         log.info("[MCP] check_availability: [{}, {}]", startTime, endTime);
-        return calendarService.checkAvailability(
+        return schedulingService.checkAvailability(
                 parseDateTimeOrThrow(startTime, "startTime"),
                 parseDateTimeOrThrow(endTime, "endTime"));
     }
@@ -92,7 +92,7 @@ public class CalendarTools {
         if (eventId == null || eventId <= 0) {
             throw new ValidationException("eventId must be a positive integer");
         }
-        return calendarService.rescheduleMeeting(
+        return schedulingService.rescheduleMeeting(
                 eventId,
                 parseDateTimeOrThrow(newStartTime, "newStartTime"),
                 parseDateTimeOrThrow(newEndTime, "newEndTime"));
@@ -109,7 +109,7 @@ public class CalendarTools {
         if (eventId == null || eventId <= 0) {
             throw new ValidationException("eventId must be a positive integer");
         }
-        return calendarService.cancelMeeting(eventId);
+        return schedulingService.cancelMeeting(eventId);
     }
 
     @Tool(
@@ -128,7 +128,7 @@ public class CalendarTools {
         if (email == null || email.isBlank()) {
             throw new ValidationException("email must not be blank");
         }
-        return calendarService.addParticipant(eventId, name, email);
+        return schedulingService.addParticipant(eventId, name, email);
     }
 
     @Tool(
@@ -148,7 +148,7 @@ public class CalendarTools {
         int resolvedSize = size != null ? size : 10;
         if (resolvedPage < 0) throw new ValidationException("page must be >= 0");
         if (resolvedSize < 1 || resolvedSize > 100) throw new ValidationException("size must be between 1 and 100");
-        return calendarService.searchEvents(title.trim(), resolvedPage, resolvedSize);
+        return schedulingService.searchEvents(title.trim(), resolvedPage, resolvedSize);
     }
 
     private static LocalDateTime parseDateTimeOrThrow(String value, String fieldName) {

@@ -2,7 +2,7 @@ package com.mcp.smartScheduler.tools;
 
 import com.mcp.smartScheduler.dto.UserRequest;
 import com.mcp.smartScheduler.entity.User;
-import com.mcp.smartScheduler.service.CalendarService;
+import com.mcp.smartScheduler.service.SchedulingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserTools {
 
-    private final CalendarService calendarService;
+    private final SchedulingService schedulingService;
 
     @Tool(
         name = "create_user",
@@ -31,7 +31,7 @@ public class UserTools {
         UserRequest req = new UserRequest();
         req.setName(name);
         req.setEmail(email);
-        return calendarService.createUser(req);
+        return schedulingService.createUser(req);
     }
 
     @Tool(
@@ -40,6 +40,6 @@ public class UserTools {
     )
     public List<User> getUsers() {
         log.info("[MCP] get_users");
-        return calendarService.getUsers();
+        return schedulingService.getUsers();
     }
 }

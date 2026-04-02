@@ -32,7 +32,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class CalendarService {
+public class SchedulingService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
@@ -112,7 +112,7 @@ public class CalendarService {
         return events.stream().map(this::toResponse).toList();
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────f────────────────────────────
     // checkAvailability
     // ─────────────────────────────────────────────────────────────────────────
 

@@ -5,8 +5,8 @@ server:
 app:
   owner:
     name: "Calendar Owner"
-    email: "${OWNER_EMAIL}"
-  api-key: "${MCP_API_KEY}"
+    email: "${OWNER_EMAIL:owner@example.com}"
+  api-key: "${MCP_API_KEY:negi-secret-key-mcp-server}"
 
 spring:
   application:
