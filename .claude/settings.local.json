@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm \"C:/Users/TenXengage/OneDrive/Documents/Projects/calendar-mcp/src/test/java/com/anurag/mcp/meetingscheduler/MeetingSchedulerMcpServerApplicationTests.java\")",
+      "Bash(rmdir \"C:/Users/TenXengage/OneDrive/Documents/Projects/calendar-mcp/src/test/java/com/anurag/mcp/meetingscheduler/\")",
+      "Bash(npx mcp-remote:*)",
+      "Read(//c/Users/TenXengage/AppData/Local/npm-cache/_npx/5a9d879542beca3a/**)",
+      "Read(//c/Users/TenXengage/AppData/Local/npm-cache/_npx/705d23756ff7dacc/**)"
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+server:
+  port: 8080
+
+# ─── Calendar Owner ────────────────────────────────────────────────────────────
+app:
+  owner:
+    name: "Calendar Owner"
+    email: "${OWNER_EMAIL}"
+  api-key: "${MCP_API_KEY}"
+
+spring:
+  application:
+    name: smart-scheduler
+
+  # ─── H2 In-Memory DataSource ─────────────────────────────────────────────────
+  datasource:
+    url: jdbc:h2:mem:calendardb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=LEGACY
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  # ─── H2 Console (accessible at http://localhost:8080/h2-console) ─────────────
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # ─── JPA / Hibernate ─────────────────────────────────────────────────────────
+  jpa:
+    hibernate:
+      ddl-auto: create-drop    # creates schema on startup, drops on shutdown
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  # ─── Spring AI MCP Server ────────────────────────────────────────────────────
+  ai:
+    mcp:
+      server:
+        name: smart-scheduler-mcp-server
+        version: 1.0.0
+        request-timeout: 30s
+        protocol: STREAMABLE
+        streamable-http:
+          mcp-endpoint: /mcp
+
+  # ─── Jackson ─────────────────────────────────────────────────────────────────
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false   # ISO-8601 date strings
+      fail-on-empty-beans: false
+    deserialization:
+      fail-on-unknown-properties: false
+    default-property-inclusion: non_null  # omit null fields from JSON output
+
+# ─── Logging ───────────────────────────────────────────────────────────────────
+logging:
+  level:
+    com.mcp.smartScheduler: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
