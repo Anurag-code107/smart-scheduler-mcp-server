@@ -426,4 +426,4 @@ The current implementation is intentionally scoped as a POC. Below is a prioriti
 
 ## License
 
-MIT
+This project is licensed under the [Apache License 2.0](https://github.com/Anurag-code107/RecipeHub-Backend/blob/main/LICENSE).
