@@ -4,6 +4,8 @@ import com.mcp.smartScheduler.dto.EventRequest;
 import com.mcp.smartScheduler.dto.EventResponse;
 import com.mcp.smartScheduler.dto.UserRequest;
 import com.mcp.smartScheduler.entity.User;
+import com.mcp.smartScheduler.exception.ConflictException;
+import com.mcp.smartScheduler.exception.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,12 +32,11 @@ class SchedulingServiceTest {
     @Autowired
     private SchedulingService schedulingService;
 
-    private User alice;
     private User bob;
 
     @BeforeEach
     void setUp() {
-        alice = schedulingService.createUser(new UserRequest() {{
+        schedulingService.createUser(new UserRequest() {{
             setName("Alice");
             setEmail("alice@test.com");
         }});
@@ -57,7 +58,7 @@ class SchedulingServiceTest {
         dup.setEmail("alice@test.com");
 
         assertThatThrownBy(() -> schedulingService.createUser(dup))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessageContaining("already exists");
     }
 
@@ -70,16 +71,14 @@ class SchedulingServiceTest {
     void createEvent_happyPath() {
         EventRequest req = buildEventRequest(
                 "Team Standup",
-                alice.getId(),
                 LocalDateTime.of(2025, 6, 1, 9, 0),
                 LocalDateTime.of(2025, 6, 1, 9, 30));
-        req.setParticipantIds(List.of(bob.getId()));
+        req.setParticipantEmails(List.of(bob.getEmail()));
 
         EventResponse resp = schedulingService.createEvent(req);
 
         assertThat(resp.getId()).isNotNull();
         assertThat(resp.getTitle()).isEqualTo("Team Standup");
-        assertThat(resp.getCreatedById()).isEqualTo(alice.getId());
         assertThat(resp.getParticipants()).hasSize(1);
         assertThat(resp.getParticipants().get(0).getEmail()).isEqualTo("bob@test.com");
     }
@@ -89,34 +88,30 @@ class SchedulingServiceTest {
     void createEvent_invalidTimeRange_throws() {
         EventRequest req = buildEventRequest(
                 "Bad Event",
-                alice.getId(),
                 LocalDateTime.of(2025, 6, 1, 10, 0),
                 LocalDateTime.of(2025, 6, 1, 9, 0));   // end before start
 
         assertThatThrownBy(() -> schedulingService.createEvent(req))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ValidationException.class)
                 .hasMessageContaining("startTime must be before endTime");
     }
 
     @Test
-    @DisplayName("createEvent – overlapping event for creator should throw")
+    @DisplayName("createEvent – overlapping event for owner should throw")
     void createEvent_overlap_throws() {
-        EventRequest first = buildEventRequest(
+        schedulingService.createEvent(buildEventRequest(
                 "Meeting A",
-                alice.getId(),
                 LocalDateTime.of(2025, 6, 1, 10, 0),
-                LocalDateTime.of(2025, 6, 1, 11, 0));
-        schedulingService.createEvent(first);
+                LocalDateTime.of(2025, 6, 1, 11, 0)));
 
         // Overlaps with first (10:30–11:30 intersects 10:00–11:00)
         EventRequest second = buildEventRequest(
                 "Meeting B",
-                alice.getId(),
                 LocalDateTime.of(2025, 6, 1, 10, 30),
                 LocalDateTime.of(2025, 6, 1, 11, 30));
 
         assertThatThrownBy(() -> schedulingService.createEvent(second))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessageContaining("overlapping");
     }
 
@@ -127,19 +122,18 @@ class SchedulingServiceTest {
     @Test
     @DisplayName("getEvents – returns events within date range")
     void getEvents_inRange() {
-        schedulingService.createEvent(buildEventRequest("E1", alice.getId(),
+        schedulingService.createEvent(buildEventRequest("E1",
                 LocalDateTime.of(2025, 6, 1, 9, 0),
                 LocalDateTime.of(2025, 6, 1, 10, 0)));
 
-        schedulingService.createEvent(buildEventRequest("E2", alice.getId(),
+        schedulingService.createEvent(buildEventRequest("E2",
                 LocalDateTime.of(2025, 6, 2, 9, 0),
                 LocalDateTime.of(2025, 6, 2, 10, 0)));
 
         // Query only June 1
         List<EventResponse> events = schedulingService.getEvents(
                 LocalDateTime.of(2025, 6, 1, 0, 0),
-                LocalDateTime.of(2025, 6, 1, 23, 59),
-                null);
+                LocalDateTime.of(2025, 6, 1, 23, 59));
 
         assertThat(events).hasSize(1);
         assertThat(events.get(0).getTitle()).isEqualTo("E1");
@@ -153,26 +147,24 @@ class SchedulingServiceTest {
     @DisplayName("checkAvailability – free slot returns available=true")
     void checkAvailability_free() {
         Map<String, Object> result = schedulingService.checkAvailability(
-                alice.getId(),
                 LocalDateTime.of(2025, 7, 1, 9, 0),
                 LocalDateTime.of(2025, 7, 1, 10, 0));
 
-        assertThat(result.get("available")).isEqualTo(true);
+        assertThat(result).containsEntry("available", true);
     }
 
     @Test
     @DisplayName("checkAvailability – busy slot returns available=false with conflicts")
     void checkAvailability_busy() {
-        schedulingService.createEvent(buildEventRequest("Busy Block", alice.getId(),
+        schedulingService.createEvent(buildEventRequest("Busy Block",
                 LocalDateTime.of(2025, 7, 1, 9, 0),
                 LocalDateTime.of(2025, 7, 1, 10, 0)));
 
         Map<String, Object> result = schedulingService.checkAvailability(
-                alice.getId(),
                 LocalDateTime.of(2025, 7, 1, 9, 30),
                 LocalDateTime.of(2025, 7, 1, 10, 30));
 
-        assertThat(result.get("available")).isEqualTo(false);
+        assertThat(result).containsEntry("available", false);
 
         @SuppressWarnings("unchecked")
         List<EventResponse> conflicts = (List<EventResponse>) result.get("conflictingEvents");
@@ -186,7 +178,7 @@ class SchedulingServiceTest {
     @Test
     @DisplayName("rescheduleMeeting – moves event to free slot")
     void rescheduleMeeting_success() {
-        EventResponse created = schedulingService.createEvent(buildEventRequest("Sprint Review", alice.getId(),
+        EventResponse created = schedulingService.createEvent(buildEventRequest("Sprint Review",
                 LocalDateTime.of(2025, 8, 1, 9, 0),
                 LocalDateTime.of(2025, 8, 1, 10, 0)));
 
@@ -203,11 +195,9 @@ class SchedulingServiceTest {
     // Helper
     // ─────────────────────────────────────────────────────────────────────────
 
-    private EventRequest buildEventRequest(String title, Long creatorId,
-                                            LocalDateTime start, LocalDateTime end) {
+    private EventRequest buildEventRequest(String title, LocalDateTime start, LocalDateTime end) {
         EventRequest req = new EventRequest();
         req.setTitle(title);
-        req.setCreatedByUserId(creatorId);
         req.setStartTime(start);
         req.setEndTime(end);
         req.setTimezone("UTC");
