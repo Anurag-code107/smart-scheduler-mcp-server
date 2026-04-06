@@ -47,35 +47,35 @@ public class DataInitializer implements CommandLineRunner {
                 .description("Daily team sync — blockers, progress, plan.")
                 .startTime(base.withHour(9))
                 .endTime(base.withHour(9).withMinute(30))
-                .createdBy(owner).timezone("UTC").build());
+                .createdBy(owner).timezone("Asia/Kolkata").build());
 
         Event productReview = eventRepository.save(Event.builder()
                 .title("Product Review")
                 .description("Q2 roadmap review with the product team.")
                 .startTime(base.withHour(10))
                 .endTime(base.withHour(11))
-                .createdBy(owner).timezone("UTC").build());
+                .createdBy(owner).timezone("Asia/Kolkata").build());
 
         Event clientCall = eventRepository.save(Event.builder()
                 .title("Client Call — Acme Corp")
                 .description("Quarterly check-in with Acme Corp.")
                 .startTime(base.withHour(13))
                 .endTime(base.withHour(14))
-                .createdBy(owner).timezone("UTC").build());
+                .createdBy(owner).timezone("Asia/Kolkata").build());
 
         Event designReview = eventRepository.save(Event.builder()
                 .title("Design Review")
                 .description("Review new dashboard mockups.")
                 .startTime(base.plusDays(1).withHour(11))
                 .endTime(base.plusDays(1).withHour(12))
-                .createdBy(owner).timezone("UTC").build());
+                .createdBy(owner).timezone("Asia/Kolkata").build());
 
         Event sprintPlanning = eventRepository.save(Event.builder()
                 .title("Sprint Planning")
                 .description("Plan tasks and story points for next sprint.")
                 .startTime(base.plusDays(1).withHour(14))
                 .endTime(base.plusDays(1).withHour(16))
-                .createdBy(owner).timezone("UTC").build());
+                .createdBy(owner).timezone("Asia/Kolkata").build());
 
         // ── 5 Sample Participants (external attendees) ────────────────────────
         participantRepository.save(Participant.builder().event(standup).name("Alice Johnson").email("alice@team.com").build());

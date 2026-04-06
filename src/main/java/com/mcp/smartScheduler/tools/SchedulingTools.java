@@ -45,7 +45,7 @@ public class SchedulingTools {
         req.setDescription(description);
         req.setStartTime(parseDateTimeOrThrow(startTime, "startTime"));
         req.setEndTime(parseDateTimeOrThrow(endTime, "endTime"));
-        req.setTimezone(timezone != null ? timezone : "UTC");
+        req.setTimezone(timezone != null ? timezone : "Asia/Kolkata");
         req.setParticipantEmails(participantEmails);
 
         return schedulingService.createEvent(req);

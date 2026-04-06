@@ -8,6 +8,7 @@ A proof-of-concept **Model Context Protocol (MCP) server** built with Spring Boo
 
 - [What is MCP?](#what-is-mcp)
 - [What This POC Does](#what-this-poc-does)
+- [Demo](#demo)
 - [Architecture](#architecture)
 - [MCP Tools Reference](#mcp-tools-reference)
 - [Tech Stack](#tech-stack)
@@ -54,21 +55,35 @@ Example interaction via Claude Desktop:
 
 ---
 
+## Demo
+
+The screenshots below show the SmartScheduler MCP server in action, connected to Claude via the claude.ai web interface.
+
+### Connecting Smart-Scheduler to Claude
 
 <img width="975" height="580" alt="image" src="https://github.com/user-attachments/assets/9837cf19-0ff8-4c79-a537-b6c04a578961" />
 
-All tools:
+### All 7 MCP Tools Recognized by Claude
+
 <img width="975" height="577" alt="image" src="https://github.com/user-attachments/assets/253bc7ac-3919-4bb7-b7bd-4b07073981c6" />
 
+### Fetching This Week's Events via Claude
 
 <img width="975" height="614" alt="image" src="https://github.com/user-attachments/assets/6229b3b5-cf9f-4b8d-8c8f-2c8112be3018" />
 
+### Checking Availability — Conflict Detection in Action
+
 <img width="975" height="605" alt="image" src="https://github.com/user-attachments/assets/f9345a30-d11e-4480-bb83-e51092096778" />
+
+### Rescheduling a Meeting via Natural Language
 
 <img width="975" height="594" alt="image" src="https://github.com/user-attachments/assets/46a378a5-beb8-4f2b-ac7f-dd4762ae9288" />
 
+### Verifying Persisted Events in H2 Console (Dev)
+
 <img width="1918" height="955" alt="Screenshot 2026-04-06 152051" src="https://github.com/user-attachments/assets/52cb8f8f-41b1-4378-a3c5-5b510e90cd5f" />
 
+---
 
 ## Architecture
 

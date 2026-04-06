@@ -46,7 +46,7 @@ public class Event {
      */
     @Column(nullable = false)
     @Builder.Default
-    private String timezone = "UTC";
+    private String timezone = "Asia/Kolkata";
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

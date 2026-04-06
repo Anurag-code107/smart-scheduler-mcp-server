@@ -22,7 +22,7 @@ public class EventRequest {
     private LocalDateTime endTime;
 
     /** IANA timezone id, e.g. "Asia/Kolkata". Defaults to "UTC" if omitted. */
-    private String timezone = "UTC";
+    private String timezone = "Asia/Kolkata";
 
     /** Optional list of participant emails to add at creation time. */
     private List<String> participantEmails;

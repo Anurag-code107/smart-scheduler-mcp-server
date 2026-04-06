@@ -87,7 +87,7 @@ public class SchedulingService {
                 .startTime(req.getStartTime())
                 .endTime(req.getEndTime())
                 .createdBy(owner)
-                .timezone(req.getTimezone() != null ? req.getTimezone() : "UTC")
+                .timezone(req.getTimezone() != null ? req.getTimezone() : "Asia/Kolkata")
                 .build();
         final Event saved = eventRepository.save(event);
         log.info("Created event id={} title='{}'", saved.getId(), saved.getTitle());
