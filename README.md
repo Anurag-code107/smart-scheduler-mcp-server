@@ -57,7 +57,7 @@ Example interaction via Claude Desktop:
 
 ## Demo
 
-The screenshots below show the SmartScheduler MCP server in action, connected to Claude via the claude.ai web interface.
+The screenshots below show the SmartScheduler MCP server in action, connected to Claude Desktop.
 
 ### Connecting Smart-Scheduler to Claude
 
@@ -79,9 +79,15 @@ The screenshots below show the SmartScheduler MCP server in action, connected to
 
 <img width="975" height="594" alt="image" src="https://github.com/user-attachments/assets/46a378a5-beb8-4f2b-ac7f-dd4762ae9288" />
 
+<img width="1544" height="970" alt="image" src="https://github.com/user-attachments/assets/3762cd63-9dbc-4d6a-adef-781d50c4308c" />
+
+
 ### Verifying Persisted Events in H2 Console (Dev)
 
 <img width="1918" height="955" alt="Screenshot 2026-04-06 152051" src="https://github.com/user-attachments/assets/52cb8f8f-41b1-4378-a3c5-5b510e90cd5f" />
+
+<img width="1170" height="700" alt="image" src="https://github.com/user-attachments/assets/59b9e363-5999-48d6-a1c4-26bfeeeacb2a" />
+
 
 ---
 
